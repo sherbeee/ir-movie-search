@@ -117,6 +117,13 @@ class BM25Okapi():
 
         return ranked_titles[:NUMBER_OF_RESULTS]
 
+def print_results(results, time):
+    print('\n-----------------Search Results-----------------')
+    print('Time Taken: {}'.format(time))
+    # print('User Query: {}'.format(query))
+    for i in range(len(results)):
+        print('{}. {} ----- Score: {}'.format(i+1, results[i]['title'].strip(), results[i]['score']))
+    print('------------------------------------------------\n')
 
 file_exists = exists('BM25.pickle')
 
@@ -144,8 +151,9 @@ else:
 
 print("model loaded.")
 while True:
-    query_input = input("Please enter a query.")
+    query_input = input("Please enter a query.\nQuery: ")
     start_time = time.time()
     results = model.query(query_input)
-    print("results - ", results)
-    print("time taken - ", (time.time() - start_time), 'seconds')
+    # print("results - ", results)
+    # print("time taken - ", (time.time() - start_time), 'seconds')
+    print_results(results, time.time() - start_time)
