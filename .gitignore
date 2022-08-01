@@ -5,5 +5,6 @@ Semantic Search/test_queries
 Queries/generated_queries_2.csv
 Queries/generated_queries.csv
 .ipynb_checkpoints
+__pycache__/
 .vscode
 .DS_Store
