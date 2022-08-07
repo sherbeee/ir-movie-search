@@ -99,13 +99,14 @@ class BM25Okapi():
             score += (self.idf[term] * ((self.k1 + 1) * term_freq /
                                         (self.k1 * ((1 - self.b) + self.b * (doc_len / self.average_doc_length)) + term_freq)))
         return score
-    
+
     def print_results(self, results, time):
         print('\n-----------------Search Results-----------------')
         print('Time Taken: {}'.format(time))
         # print('User Query: {}'.format(query))
         for i in range(len(results)):
-            print('{}. {} ----- Score: {}'.format(i+1, results[i]['title'].strip(), results[i]['score']))
+            print('{}. {} ----- Score: {}'.format(i+1,
+                  results[i]['title'].strip(), results[i]['score']))
         print('------------------------------------------------\n')
 
     def query(self, query, top_k):
@@ -132,6 +133,7 @@ class BM25Okapi():
 
         return ranked_titles[:top_k]
 
+
 class BM25WithBertRerank():
 
     def __init__(self, model_name='bert-base-nli-mean-tokens'):
@@ -146,7 +148,8 @@ class BM25WithBertRerank():
         else:
             # load csv.
             movie_data = pd.read_csv('parsed_data.csv', header=0)
-            plots = list(pd.read_csv('movie_data.csv', header=0)['Plot'].to_numpy())
+            plots = list(pd.read_csv('movie_data.csv', header=0)
+                         ['Plot'].to_numpy())
             raw_list = movie_data.values.tolist()
 
             corpus = []
@@ -167,13 +170,13 @@ class BM25WithBertRerank():
 
     def process_plot(self, plots):
         processed_plots = []
-        
+
         for plot in plots:
             processed_plot = re.sub(r'\[.*?\]', '', plot)
             processed_plots.append(processed_plot)
-        
+
         return processed_plots
-    
+
     def cosine_sim(self, query, plots):
         scores = util.cos_sim(query, plots).tolist()[0]
         return scores
@@ -185,23 +188,23 @@ class BM25WithBertRerank():
         # create embeddings for plots
         plots = self.process_plot([r['plot'] for r in results])
         plots_emb = self.encoder.encode(plots)
-        
+
         # compute cosine similarity between query and each plot
         scores = self.cosine_sim(query_emb, plots_emb)
 
         # update the scores
         for i in range(len(scores)):
             results[i]['score'] = scores[i]
-        
+
         # re-sort the results
         results.sort(
             key=lambda x: x['score'], reverse=True)
-    
+
         return results[:top_k]
 
     def search(self, query, top_k, rerank=False, print_results=True):
         start_time = time.time()
-        
+
         results = self.model.query(query, NUMBER_OF_CANDIDATES)
 
         if rerank:
@@ -209,9 +212,9 @@ class BM25WithBertRerank():
 
         if print_results:
             self.print_results(results, time.time() - start_time, rerank)
-        
+
         return results
-    
+
     def print_results(self, results, time, rerank):
         if rerank:
             print('\n------------Reranked Search Results-------------')
@@ -220,7 +223,8 @@ class BM25WithBertRerank():
         print('Time Taken: {}'.format(time))
         # print('User Query: {}'.format(query))
         for i in range(len(results)):
-            print('{}. {} ----- Score: {}'.format(i+1, results[i]['title'].strip(), results[i]['score']))
+            print('{}. {} ----- Score: {}'.format(i+1,
+                  results[i]['title'].strip(), results[i]['score']))
         print('------------------------------------------------\n')
 
 
@@ -229,11 +233,14 @@ def inititalise_BM25(model_path='BM25.pickle'):
 
     if file_exists:
         file = open(model_path, "rb")
+        print("FILE FOUND and OPENED")
         model = pickle.load(file)
+        print("THIS IS INITIALISED")
     else:
         # load csv.
         movie_data = pd.read_csv('parsed_data.csv', header=0)
-        plots = list(pd.read_csv('movie_data.csv', header=0)['Plot'].to_numpy())
+        plots = list(pd.read_csv('movie_data.csv', header=0)
+                     ['Plot'].to_numpy())
         raw_list = movie_data.values.tolist()
 
         corpus = []
@@ -253,23 +260,25 @@ def inititalise_BM25(model_path='BM25.pickle'):
     print("model loaded.")
     return model
 
-selected_engine = input("Please select if you want to run BM25 or BM25 with BERT Reranking. Select 1 for BM25 and 2 for BM25 with BERT Reranking:\n")
+# selected_engine = input("Please select if you want to run BM25 or BM25 with BERT Reranking. Select 1 for BM25 and 2 for BM25 with BERT Reranking:\n")
 
-if int(selected_engine) == 2:
-    search_engine = BM25WithBertRerank()
 
-    while True:
-        query_input = input("Please enter a query.\nQuery: ")
-        results = search_engine.search(query_input, NUMBER_OF_RESULTS)
-        results = search_engine.search(query_input, NUMBER_OF_RESULTS, rerank=True)
+# if int(selected_engine) == 2:
+#     search_engine = BM25WithBertRerank()
 
-else: 
-    model = inititalise_BM25()
+#     while True:
+#         query_input = input("Please enter a query.\nQuery: ")
+#         results = search_engine.search(query_input, NUMBER_OF_RESULTS)
+#         results = search_engine.search(
+#             query_input, NUMBER_OF_RESULTS, rerank=True)
 
-    while True:
-        query_input = input("Please enter a query.\nQuery: ")
-        start_time = time.time()
-        results = model.query(query_input, NUMBER_OF_RESULTS)
-        # print("results - ", results)
-        # print("time taken - ", (time.time() - start_time), 'seconds')
-        model.print_results(results, time.time() - start_time)
+# else:
+#     model = inititalise_BM25()
+
+#     while True:
+#         query_input = input("Please enter a query.\nQuery: ")
+#         start_time = time.time()
+#         results = model.query(query_input, NUMBER_OF_RESULTS)
+#         # print("results - ", results)
+#         # print("time taken - ", (time.time() - start_time), 'seconds')
+#         model.print_results(results, time.time() - start_time)

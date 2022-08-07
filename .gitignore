@@ -9,3 +9,5 @@ frontend/node_modules
 __pycache__/
 .vscode
 .DS_Store
+BM25.pickle
+plot_embeddings.pkl

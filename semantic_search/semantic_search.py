@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 class SearchUsingBert():
     
-    def __init__(self, data, training_data=None, base_model='sentence-transformers/msmarco-distilbert-base-dot-prod-v3', model_file_path='../Semantic Search/bert_models/search-bert-model', emb_file_path = '../Semantic Search/embeddings/plot_embeddings.pkl', finetune=True, num_of_epochs=3, save_model_path='../Semantic Search/bert_models/search-bert-model'):
+    def __init__(self, data, training_data=None, base_model='sentence-transformers/msmarco-distilbert-base-dot-prod-v3', model_file_path='../semantic_search/bert_models/search-bert-model', emb_file_path = '../semantic_search/embeddings/plot_embeddings.pkl', finetune=True, num_of_epochs=3, save_model_path='../semantic_search/bert_models/search-bert-model'):
         print("Initialising Bert Search Engine...\n")
         
         self.movie_data = data
@@ -173,10 +173,10 @@ class SearchUsingBert():
         print('\n')
 
 # Load in movie data
-movie_data = pd.read_csv('../movie_data.csv', header=0)
+# movie_data = pd.read_csv('../movie_data.csv', header=0)
 
 # Start up the search engine (default - finetuned using basic T5 Model)
-search_engine = SearchUsingBert(movie_data)
+# search_engine = SearchUsingBert(movie_data)
 
 
 # Finetuned using generated queries from T5 One Line Summary Model
@@ -185,10 +185,10 @@ search_engine = SearchUsingBert(movie_data)
 # Base Model
 # search_engine = SearchUsingBert(movie_data, training_data, model_file_path="../Semantic Search/bert_models/search-base-bert-model", emb_file_path="../Semantic Search/embeddings/plot_embeddings_base.pkl", finetune=False)
 
-test_query = "spider man and his girlfriend"
-k = 5
+# test_query = "spider man and his girlfriend"
+# k = 5
 
-results = search_engine.search(test_query, k)
+# results = search_engine.search(test_query, k)
 
 # Re-Ranking using Cross-Encoder
-reranked_results = search_engine.search(test_query, k, re_rank=True, rerank_method='cross-encoder')
+# reranked_results = search_engine.search(test_query, k, re_rank=True, rerank_method='cross-encoder')
