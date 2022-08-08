@@ -6,9 +6,12 @@ import re
 import pickle
 from tqdm import tqdm
 
+MOVIE_DATA_PATH = 'movie_data.csv'
+
 class SearchUsingBert():
     
-    def __init__(self, data, training_data=None, base_model='sentence-transformers/msmarco-distilbert-base-dot-prod-v3', model_file_path='../semantic_search/bert_models/search-bert-model', emb_file_path = '../semantic_search/embeddings/plot_embeddings.pkl', finetune=True, num_of_epochs=3, save_model_path='../semantic_search/bert_models/search-bert-model'):
+    def __init__(self, data, training_data=None, base_model='sentence-transformers/msmarco-distilbert-base-dot-prod-v3', model_file_path='semantic_search/search-bert-model', emb_file_path = 'semantic_search/plot_embeddings.pkl', finetune=True, num_of_epochs=3, save_model_path='semantic_search/bert_models/new-search-bert-model'):
+
         print("Initialising Bert Search Engine...\n")
         
         self.movie_data = data
@@ -25,7 +28,7 @@ class SearchUsingBert():
             if training_data == None:
                 print("Please provide training data.")
                 return
-            self.model = self.finetune_model(training_data, finetune, base_model, num_of_epochs, model_file_path)
+            self.model = self.finetune_model(training_data, finetune, base_model, num_of_epochs, save_model_path)
             
         # if embeddings file exist, load in the embeddings
         if path.exists(emb_file_path):
@@ -134,17 +137,20 @@ class SearchUsingBert():
         if print_progress:
             print('Search completed.\n')
 
+        rerank_time_taken = time.time()
         if re_rank:
             if rerank_method == None:
                 print('Please specify a re-ranking method.')
                 return
             if rerank_method == 'cross-encoder':
+                rerank_start_time = time.time()
                 print('Reranking in progress...')
                 if cross_encoder == None:
                     highest_k = self.re_rank(query, highest_k, rerank_method)
                 else:
                     highest_k = self.re_rank(query, highest_k, rerank_method, cross_encoder)
-                print('Reranking completed.')
+                rerank_time_taken = time.time() - rerank_start_time
+                print('Reranking completed.\n')
         
         movies = self.retrieve_movies(highest_k)
 
@@ -158,26 +164,29 @@ class SearchUsingBert():
             })
         
         if print_results:
-            self.print_results(query, time_taken, results)
+            self.print_results(query, time_taken, results, rerank_time=rerank_time_taken)
         
         return results
 
-    def print_results(self, query, time, results):
-        print('-----------------Search Results-----------------')
-        print('Total Search Time: {}'.format(time))
+    def print_results(self, query, time, results, rerank_time=None):
+        if rerank_time != None:
+            print('------------Reranked Search Results-------------')
+        else:
+            print('-----------------Search Results-----------------')
+        print('Total Search Time: {}s'.format(time))
+        if rerank_time != None:
+            print('Time Taken for Reranking: {}s'.format(time))
         print('User Query: {}'.format(query))
         print('\nResults:')
         for i in range(len(results)):
             r = results[i]
             print('{}. {} ({}) ----- Score: {}'.format(i+1, r['title'], r['year'], r['score']))
-        print('\n')
 
 # Load in movie data
-# movie_data = pd.read_csv('../movie_data.csv', header=0)
+movie_data = pd.read_csv(MOVIE_DATA_PATH, header=0)
 
 # Start up the search engine (default - finetuned using basic T5 Model)
-# search_engine = SearchUsingBert(movie_data)
-
+search_engine = SearchUsingBert(movie_data)
 
 # Finetuned using generated queries from T5 One Line Summary Model
 # search_engine = SearchUsingBert(movie_data, model_file_path="../Semantic Search/bert_models/search-bert-model-2", emb_file_path="../Semantic Search/embeddings/plot_embeddings_2.pkl")
@@ -185,10 +194,10 @@ class SearchUsingBert():
 # Base Model
 # search_engine = SearchUsingBert(movie_data, training_data, model_file_path="../Semantic Search/bert_models/search-base-bert-model", emb_file_path="../Semantic Search/embeddings/plot_embeddings_base.pkl", finetune=False)
 
-# test_query = "spider man and his girlfriend"
-# k = 5
+test_query = "spider man and his girlfriend"
+k = 5
 
-# results = search_engine.search(test_query, k)
+results = search_engine.search(test_query, k)
 
 # Re-Ranking using Cross-Encoder
-# reranked_results = search_engine.search(test_query, k, re_rank=True, rerank_method='cross-encoder')
+reranked_results = search_engine.search(test_query, k, re_rank=True, rerank_method='cross-encoder')
