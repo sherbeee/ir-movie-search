@@ -126,18 +126,23 @@ class SearchUsingBert():
             new_scores = sorted([(indexes[i], scores[i]) for i in range(len(indexes))], key=lambda x: x[1], reverse=True)
             return new_scores
     
-    def search(self, query, top_k, print_progress=True, print_results=True, re_rank=False, rerank_method=None, cross_encoder=None):
+    def search(self, query, top_k, num_candidates=50, print_progress=True, print_results=True, re_rank=False, rerank_method=None, cross_encoder=None):
         if print_progress:
             print('Searching in progress...')
         start_time = time.time()
         query_embedding = self.model.encode([query])
         sim_scores = self.cosine_sim(query_embedding, self.plots_emb)
-        highest_k = self.get_k_highest(top_k, sim_scores)
+        
+        if re_rank:
+            highest_k = self.get_k_highest(num_candidates, sim_scores)
+        else:
+            highest_k = self.get_k_highest(top_k, sim_scores)
+        
         time_taken = time.time() - start_time
         if print_progress:
             print('Search completed.\n')
 
-        rerank_time_taken = time.time()
+        rerank_time_taken = None
         if re_rank:
             if rerank_method == None:
                 print('Please specify a re-ranking method.')
@@ -175,12 +180,13 @@ class SearchUsingBert():
             print('-----------------Search Results-----------------')
         print('Total Search Time: {}s'.format(time))
         if rerank_time != None:
-            print('Time Taken for Reranking: {}s'.format(time))
+            print('Time Taken for Reranking: {}s'.format(rerank_time_taken))
         print('User Query: {}'.format(query))
         print('\nResults:')
-        for i in range(len(results)):
+        for i in range(min(10, len(results))):
             r = results[i]
             print('{}. {} ({}) ----- Score: {}'.format(i+1, r['title'], r['year'], r['score']))
+        print('-------------------------------------------------\n')
 
 # Load in movie data
 # movie_data = pd.read_csv(MOVIE_DATA_PATH, header=0)
@@ -194,8 +200,8 @@ class SearchUsingBert():
 # Base Model
 # search_engine = SearchUsingBert(movie_data, training_data, model_file_path="../Semantic Search/bert_models/search-base-bert-model", emb_file_path="../Semantic Search/embeddings/plot_embeddings_base.pkl", finetune=False)
 
-# test_query = "spider man and his girlfriend"
-# k = 5
+# test_query = "spiderman and mary jane"
+# k = 10
 
 # results = search_engine.search(test_query, k)
 
