@@ -183,10 +183,10 @@ class SearchUsingBert():
             print('{}. {} ({}) ----- Score: {}'.format(i+1, r['title'], r['year'], r['score']))
 
 # Load in movie data
-movie_data = pd.read_csv(MOVIE_DATA_PATH, header=0)
+# movie_data = pd.read_csv(MOVIE_DATA_PATH, header=0)
 
 # Start up the search engine (default - finetuned using basic T5 Model)
-search_engine = SearchUsingBert(movie_data)
+# search_engine = SearchUsingBert(movie_data)
 
 # Finetuned using generated queries from T5 One Line Summary Model
 # search_engine = SearchUsingBert(movie_data, model_file_path="../Semantic Search/bert_models/search-bert-model-2", emb_file_path="../Semantic Search/embeddings/plot_embeddings_2.pkl")
@@ -194,10 +194,10 @@ search_engine = SearchUsingBert(movie_data)
 # Base Model
 # search_engine = SearchUsingBert(movie_data, training_data, model_file_path="../Semantic Search/bert_models/search-base-bert-model", emb_file_path="../Semantic Search/embeddings/plot_embeddings_base.pkl", finetune=False)
 
-test_query = "spider man and his girlfriend"
-k = 5
+# test_query = "spider man and his girlfriend"
+# k = 5
 
-results = search_engine.search(test_query, k)
+# results = search_engine.search(test_query, k)
 
-# Re-Ranking using Cross-Encoder
-reranked_results = search_engine.search(test_query, k, re_rank=True, rerank_method='cross-encoder')
+# # Re-Ranking using Cross-Encoder
+# reranked_results = search_engine.search(test_query, k, re_rank=True, rerank_method='cross-encoder')
