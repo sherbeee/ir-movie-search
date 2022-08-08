@@ -5,6 +5,9 @@ from BM25 import BM25Okapi
 from BM25 import *
 from semantic_search.semantic_search import SearchUsingBert
 from flask import request
+import json
+import numpy as np
+
 app = Flask(__name__)
 
 K_RESULTS = 5
@@ -12,6 +15,19 @@ K_RESULTS = 5
 semantic_search_engine = None
 bm25_bert_search_engine = None
 bm25_search_engine = None
+
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super(NpEncoder, self).default(obj)
+
+
 """
 GET params:
 
@@ -41,13 +57,16 @@ def search():
     else:
         results = bm25_bert_search_engine.search(query, K_RESULTS)
 
-    return {"results":results}
+    results = json.dumps(results, cls=NpEncoder)
+    results = json.loads(results)
+    return {"results": results}
 
 
 if __name__ == "__main__":
 
     movie_data = pd.read_csv('movie_data.csv', header=0)
-    search_engine = SearchUsingBert(movie_data, training_data=None , model_file_path="../semantic_search/bert_models/search-base-bert-model", emb_file_path="../semantic_search/embeddings/plot_embeddings_base.pkl", finetune=False)
+    semantic_search_engine = SearchUsingBert(movie_data, training_data=None, model_file_path="./semantic_search/bert_models/search-base-bert-model",
+                                             emb_file_path="./semantic_search/embeddings/plot_embeddings_base.pkl", finetune=False)
 
     with open('BM25.pickle', 'rb') as file:
         bm25_search_engine = pickle.load(file)
