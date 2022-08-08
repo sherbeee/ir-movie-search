@@ -1,7 +1,7 @@
 env/
-Semantic Search/bert_models
-Semantic Search/embeddings
-Semantic Search/test_queries
+semantic_search/search-bert-model
+semantic_search/plot_embeddings.pkl
+semantic_search/test_queries
 Queries/generated_queries_2.csv
 Queries/generated_queries.csv
 .ipynb_checkpoints
@@ -10,4 +10,4 @@ __pycache__/
 .vscode
 .DS_Store
 BM25.pickle
-plot_embeddings.pkl
+
