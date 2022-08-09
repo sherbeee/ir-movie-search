@@ -180,7 +180,7 @@ class SearchUsingBert():
             print('-----------------Search Results-----------------')
         print('Total Search Time: {}s'.format(time))
         if rerank_time != None:
-            print('Time Taken for Reranking: {}s'.format(rerank_time_taken))
+            print('Time Taken for Reranking: {}s'.format(rerank_time))
         print('User Query: {}'.format(query))
         print('\nResults:')
         for i in range(min(10, len(results))):
