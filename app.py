@@ -41,12 +41,14 @@ engine: specifies which search implementation to use.
 query: user's query for movie plot description.
 """
 
-@app.route("/test", methods = ['GET'])
+
+@app.route("/test", methods=['GET'])
 def home():
     requested_engine = request.args.get("engine")
     query = request.args.get("query")
     res = " Hello World! "
     return {"results": {"query": query, "engine": requested_engine}}
+
 
 @app.route("/search", methods=['GET'])
 def search():
@@ -58,7 +60,7 @@ def search():
     elif requested_engine == "BM25":
         results = bm25_search_engine.query(query, K_RESULTS)
     else:
-        results = bm25_bert_search_engine.search(query, K_RESULTS)
+        results = bm25_bert_search_engine.search(query, K_RESULTS, rerank=True)
 
     results = json.dumps(results, cls=NpEncoder)
     results = json.loads(results)
