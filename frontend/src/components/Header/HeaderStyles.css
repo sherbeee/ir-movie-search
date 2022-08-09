@@ -1,13 +1,4 @@
 /* ############### Header Section ############### */
-
-.header-wrapper-home {
-  background: url("./images/misc/home-bg.jpg");
-  background-position: top left;
-  background-size: cover;
-  background-repeat: no-repeat;
-  padding: 50px 50px;
-}
-
 .header-wrapper-browse {
   background: url("./images/misc/joker1.jpg");
   background-position: center top;

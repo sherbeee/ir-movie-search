@@ -13,24 +13,28 @@ import axios from "axios";
 
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [engine, setEngine] = useState("");
+  const [engine, setEngine] = useState("BERT");
   const [searchResults, setSearchResults] = useState([]);
 
+  
   const onChangeQuery = (e) => {
     setSearchQuery(e.target.value);
   };
 
+  const onEngineChange = (e) => {
+    setEngine(e.target.value);
+  }
+
   const onSubmit = (e) => {
     e.preventDefault();
-    console.log(searchQuery);
+    console.log({engine: engine, query: searchQuery});
     axios
       .get("http://localhost:5000/search", {
         params: { engine: "BM25", query: searchQuery },
       })
       .then((res) => {
-        console.log("SUCCESS", res);
-        setSearchResults(res.data);
-        console.log(searchQuery);
+        console.log("SUCCESS", res.data);
+        setSearchResults(res.data.results);
         /*axios
       .get("http://localhost:5000/test", {params: {engine: "BM25", query: searchQuery}})
       .then((res) => {
@@ -45,24 +49,37 @@ function App() {
     <HeaderWrapper className="header-wrapper-home">
       <Row>
         <Col md="6">
-          <NavBar className="navbar-home">
-            <Logo />
-          </NavBar>
+          <NavBar className="navbar-home"></NavBar>
           <FeatureWrapper className="feature-wrapper-home">
             <FeatureTitle className="feature-title-home">
               Unlimited movies, TV shows and more.
             </FeatureTitle>
             <Warning>Search for your favourite movies!</Warning>
+            <Col style={{ paddingLeft: "3rem", paddingRight: "3rem" }}>
+              <InputGroup  style={{marginBottom:"20px"}}>
+                <InputGroup.Text>Search Engine:
+                </InputGroup.Text>
+                <Form.Select onChange={onEngineChange}>
+                  <option>BERT</option>
+                  <option>BM25 with BERT rerank</option>
 
-            <InputGroup style={{ paddingLeft: "3rem", paddingRight: "3rem" }}>
-              <Form.Control
-                placeholder="Search for your favourite movies!"
-                onChange={onChangeQuery}
-              />
-              <Button variant="danger" onClick={onSubmit}>
-                Search
-              </Button>
-            </InputGroup>
+                </Form.Select>
+              </InputGroup>
+
+
+              <InputGroup >
+                <Form.Control
+                  placeholder="Search for your favourite movies!"
+                  onChange={onChangeQuery}
+                />
+                <Button variant="danger" onClick={onSubmit}>
+                  Search
+                </Button>
+              </InputGroup>
+            </Col>
+
+            <br />
+            <br />
             <br />
             <br />
             <br />
@@ -77,9 +94,9 @@ function App() {
             <>
               <Card>
                 <Card.Body>
-                  <Card.Title>Movie Title</Card.Title>
-                  <Card.Subtitle>Score: 100</Card.Subtitle>
-                  <Card.Text>This is a random movie plot.</Card.Text>
+                  <Card.Title>{result.title}</Card.Title>
+                  <Card.Subtitle>Score: {result.score}</Card.Subtitle>
+                  <Card.Text>{result.plot}</Card.Text>
                 </Card.Body>
               </Card>
             </>
