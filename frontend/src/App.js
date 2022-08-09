@@ -1,6 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import HeaderWrapper from "./components/Header/HeaderWrapper";
 import NavBar from "./components/Header/NavBar";
 import Logo from "./components/Header/Logo";
@@ -16,10 +16,15 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [engine, setEngine] = useState("BM25");
   const [searchResults, setSearchResults] = useState([]);
-
+  const [showLoader, setShowLoader] = useState(false);
+  const [showWarning, setWarning] = useState(false);
   
   const onChangeQuery = (e) => {
     setSearchQuery(e.target.value);
+
+    if (e.target.value.length > 0) {
+      setWarning(false);
+    }
   };
 
   const onEngineChange = (e) => {
@@ -28,13 +33,23 @@ function App() {
 
   const onSubmit = (e) => {
     e.preventDefault();
+    
+    if (searchQuery.length === 0) {
+      setWarning(true)
+      return
+    }
+
+    setWarning(false)
+    setSearchResults([]);
+    setShowLoader(true);
     console.log({engine: engine, query: searchQuery});
     axios
-      .get("http://localhost:5000/search", {
+      .get("http://127.0.0.1:5000/search", {
         params: { engine: engine, query: searchQuery },
       })
       .then((res) => {
         console.log("SUCCESS", res.data);
+        setShowLoader(false);
         setSearchResults(res.data.results);
         /*axios
       .get("http://localhost:5000/test", {params: {engine: "BM25", query: searchQuery}})
@@ -78,6 +93,7 @@ function App() {
                   Search
                 </Button>
               </InputGroup>
+              {showWarning && <h6 className="query-warning">Please input a query!</h6>}
             </Col>
 
             <br />
@@ -97,6 +113,7 @@ function App() {
               <ResultCard result={result}></ResultCard>
             </>
           ))}
+          {showLoader && <h6 className="loading">Loading Results...</h6>}
         </Col>
       </Row>
     </HeaderWrapper>
