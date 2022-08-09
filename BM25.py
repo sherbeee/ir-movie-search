@@ -17,7 +17,7 @@ from os.path import exists
 
 
 NUMBER_OF_RESULTS = 10
-NUMBER_OF_CANDIDATES = 100
+NUMBER_OF_CANDIDATES = 50
 
 
 class BM25Okapi():
@@ -205,10 +205,12 @@ class BM25WithBertRerank():
     def search(self, query, top_k, rerank=False, print_results=True):
         start_time = time.time()
 
-        results = self.model.query(query, NUMBER_OF_CANDIDATES)
-
         if rerank:
+            results = self.model.query(query, NUMBER_OF_CANDIDATES)
             results = self.rerank(query, results, top_k)
+        
+        else:
+            results = self.model.query(query, top_k)
 
         if print_results:
             self.print_results(results, time.time() - start_time, rerank)
