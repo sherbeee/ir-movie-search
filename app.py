@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 import pandas as pd
 from sqlalchemy import null
 from BM25 import BM25Okapi
@@ -9,6 +10,7 @@ import json
 import numpy as np
 
 app = Flask(__name__)
+CORS(app)
 
 K_RESULTS = 5
 
@@ -39,11 +41,12 @@ engine: specifies which search implementation to use.
 query: user's query for movie plot description.
 """
 
-
-@app.route("/")
+@app.route("/test", methods = ['GET'])
 def home():
-    return "Hello World!"
-
+    requested_engine = request.args.get("engine")
+    query = request.args.get("query")
+    res = " Hello World! "
+    return {"results": {"query": query, "engine": requested_engine}}
 
 @app.route("/search", methods=['GET'])
 def search():
@@ -65,8 +68,8 @@ def search():
 if __name__ == "__main__":
 
     movie_data = pd.read_csv('movie_data.csv', header=0)
-    semantic_search_engine = SearchUsingBert(movie_data, training_data=None, model_file_path="./semantic_search/bert_models/search-base-bert-model",
-                                             emb_file_path="./semantic_search/embeddings/plot_embeddings_base.pkl", finetune=False)
+    semantic_search_engine = SearchUsingBert(movie_data, training_data=None, model_file_path="./semantic_search/bert_models/search-bert-model",
+                                             emb_file_path="./semantic_search/embeddings/plot_embeddings.pkl", finetune=False)
 
     with open('BM25.pickle', 'rb') as file:
         bm25_search_engine = pickle.load(file)
