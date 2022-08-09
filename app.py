@@ -55,10 +55,10 @@ def search():
     requested_engine = request.args.get("engine")
     query = request.args.get("query")
 
-    if requested_engine == "BERT":
+    if requested_engine == "S-BERT":
         results = semantic_search_engine.search(query, K_RESULTS)
     elif requested_engine == "BM25":
-        results = bm25_search_engine.query(query, K_RESULTS)
+        results = bm25_bert_search_engine.search(query, K_RESULTS, rerank=False)
     else:
         results = bm25_bert_search_engine.search(query, K_RESULTS, rerank=True)
 
