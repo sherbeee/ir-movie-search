@@ -70,8 +70,8 @@ def search():
 if __name__ == "__main__":
 
     movie_data = pd.read_csv('movie_data.csv', header=0)
-    semantic_search_engine = SearchUsingBert(movie_data, training_data=None, model_file_path="./semantic_search/bert_models/search-bert-model",
-                                             emb_file_path="./semantic_search/embeddings/plot_embeddings.pkl", finetune=False)
+    semantic_search_engine = SearchUsingBert(movie_data, training_data=None, model_file_path="./semantic_search/search-bert-model",
+                                             emb_file_path="./semantic_search/plot_embeddings.pkl", finetune=False)
 
     with open('BM25.pickle', 'rb') as file:
         bm25_search_engine = pickle.load(file)

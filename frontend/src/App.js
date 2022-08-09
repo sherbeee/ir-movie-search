@@ -30,7 +30,7 @@ function App() {
     console.log({engine: engine, query: searchQuery});
     axios
       .get("http://localhost:5000/search", {
-        params: { engine: "BM25", query: searchQuery },
+        params: { engine: engine, query: searchQuery },
       })
       .then((res) => {
         console.log("SUCCESS", res.data);

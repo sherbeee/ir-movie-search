@@ -2,7 +2,7 @@ body {
   background: url("./components/Header/images/misc/home-bg.jpg");
   background-position: top left;
   background-size: cover;
-  background-repeat: no-repeat;
+  background-repeat: repeat-y;
   padding: 50px 50px;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
