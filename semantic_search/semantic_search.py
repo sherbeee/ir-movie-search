@@ -171,7 +171,7 @@ class SearchUsingBert():
         if print_results:
             self.print_results(query, time_taken, results, rerank_time=rerank_time_taken)
         
-        return results
+        return results[0:top_k]
 
     def print_results(self, query, time, results, rerank_time=None):
         if rerank_time != None:
