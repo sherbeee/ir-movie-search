@@ -7,13 +7,14 @@ import Logo from "./components/Header/Logo";
 import FeatureWrapper from "./components/Header/FeatureWrapper";
 import FeatureTitle from "./components/Header/FeatureTitle";
 import Warning from "./components/Header/Warning";
-import { Row, Col, Button, InputGroup, Form, Card } from "react-bootstrap";
+import { Row, Col, Button, InputGroup, Form } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
+import ResultCard from "./ResultCard";
 
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [engine, setEngine] = useState("BERT");
+  const [engine, setEngine] = useState("BM25");
   const [searchResults, setSearchResults] = useState([]);
 
   
@@ -60,9 +61,10 @@ function App() {
                 <InputGroup.Text>Search Engine:
                 </InputGroup.Text>
                 <Form.Select onChange={onEngineChange}>
-                  <option>BERT</option>
+                  <option>BM25</option>
                   <option>BM25 with BERT rerank</option>
-
+                  <option>S-BERT</option>
+                  <option>S-BERT with Cross-Encoder Reranking</option>
                 </Form.Select>
               </InputGroup>
 
@@ -92,13 +94,7 @@ function App() {
         <Col md="6">
           {searchResults.map((result) => (
             <>
-              <Card>
-                <Card.Body>
-                  <Card.Title>{result.title}</Card.Title>
-                  <Card.Subtitle>Score: {result.score}</Card.Subtitle>
-                  <Card.Text>{result.plot}</Card.Text>
-                </Card.Body>
-              </Card>
+              <ResultCard result={result}></ResultCard>
             </>
           ))}
         </Col>

@@ -53,3 +53,23 @@
     transform: rotate(360deg);
   }
 }
+
+.read-more {
+  cursor: pointer;
+  font-size: 0.8vw;
+  float: right;
+}
+
+.read-more:hover {
+  color: grey;
+  text-decoration: underline;
+}
+.card-subtitle.h6 {
+  margin-top: 0.5vw;
+}
+
+.card-text{
+  margin-top: 1vw;
+  text-align: justify;
+  text-justify: inter-word;
+}
